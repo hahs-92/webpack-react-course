@@ -3,9 +3,6 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 //css
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-//optimizations
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const TerserPlugin = require("terser-webpack-plugin")
 
 /** @type {import('webpack').Configuration} */
 
@@ -13,18 +10,22 @@ module.exports = {
     entry: './src/index.js',
     output: {
         path : path.resolve(__dirname, 'dist'),
-        filename: '[name].[contenthash].js',
-        clean: true
+        filename: '[name].[contenthash].js'
     },
-    mode: 'production',
+    mode: 'development',
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'),
+            watch: true
+        },
+        watchFiles: path.join(__dirname, './**'),
+        compress: true,
+        historyApiFallback: true,
+        port: 5005,
+        open: true
+    },
     resolve: {
-        extensions: ['.js','.jsx'],
-        alias: {
-            '@components' : path.resolve(__dirname, 'src/components/'),
-            '@pages' : path.resolve(__dirname, 'src/pages/'),
-            '@images' : path.resolve(__dirname, 'src/images/'),
-            '@styles' : path.resolve(__dirname, 'src/styles/'),
-        }
+        extensions: ['.js','.jsx']
     },
     module: {
         rules: [
@@ -44,7 +45,7 @@ module.exports = {
             {
                 test: /\.(css|scss)$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    'style-loader',
                     'css-loader',
                     'sass-loader'
                 ],
@@ -59,12 +60,5 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: '[name].css'
         })
-    ],
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin(),
-            new CssMinimizerPlugin()
-        ],
-      }
+    ]
 }
