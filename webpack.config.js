@@ -1,4 +1,6 @@
 const path = require('path')
+//html
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 /** @type {import('webpack').Configuration} */
 
@@ -9,7 +11,6 @@ module.exports = {
         filename: '[name].[contenthash].js',
         clean: true
     },
-    mode: 'production',
     devServer: {
         static: {
             directory: path.join(__dirname, 'dist'),
@@ -18,23 +19,33 @@ module.exports = {
         watchFiles: path.join(__dirname, './**'),
         compress: true,
         historyApiFallback: true,
-        port: 5000,
+        port: 5005,
         open: true
     },
     resolve: {
         extensions: ['.js','.jsx']
     },
     module: {
-        rules: {
-            rules: [
-                {
-                    test: /\.(js|jsx)$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader'
-                    }
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
                 }
-            ]
-        }
-    }
+            },
+            {
+                test: /\.html$/,
+                use: [
+                    { loader: 'html-loader' }
+                ]
+            }
+        ]
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './public/index.html',
+            filename: './index.html'
+        })
+    ]
 }
